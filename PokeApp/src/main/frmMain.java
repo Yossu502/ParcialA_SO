@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +31,7 @@ public class frmMain extends javax.swing.JFrame {
     Pokedex dexter; // objeto que hará uso de la conexión a la API
     Pokemon miPokemon; // objeto de la clase que hace match con los datos de la API
     Reloj reloj = new Reloj(); // objeto para la hora del sistema. ¡No modificar!
-    Hilo bpokemon = new Hilo(1);
+    boolean loop = true;        //Booleano para saber cuando se detiene
     /**
      * Creates new form frmMain
      */
@@ -50,6 +51,7 @@ public class frmMain extends javax.swing.JFrame {
         }
         
         public void buscarPokemon() throws IOException, InterruptedException{
+            Viewer prueba = new Viewer();
             btnBuscar.setEnabled(false);
             txtNombre.setEnabled(false);
             System.out.println("Conectando a la API...");
@@ -70,6 +72,7 @@ public class frmMain extends javax.swing.JFrame {
             lblNombre.setText(miPokemon.getName());
             lblHeight.setText(String.valueOf(miPokemon.getHeight()) + " m");
             lblWeight.setText(String.valueOf(miPokemon.getWeight()) + " kg");
+            prueba.start();
             System.out.println("¡Datos del Pokémon descargados!");
             btnBuscar.setEnabled(true);
             txtNombre.setEnabled(true);
@@ -77,30 +80,59 @@ public class frmMain extends javax.swing.JFrame {
         }
     }
     
+    public void Pausar(){
+        loop = false;
+    }
+    public void Iniciar(){
+        loop = true;
+    }
+    
     // clase que mostrará los 4 sprites del pokémon
-    public class Viewer {
+    public class Viewer extends Thread{
+        ArrayList<Image> list=new ArrayList<Image>();
+        int cont = 0;
         public void mostrarSprites() throws MalformedURLException, IOException, InterruptedException{
             // obtengo la url del listado de cada uno de los sprites que me dio la API
             URL url = new URL(miPokemon.getSprites().get("front_default").toString());
             Image img = ImageIO.read(url);
-            lblSprites.setIcon(new ImageIcon(img));
-            // 1 segundo para cada cambio de sprite
-            Thread.sleep(1000);
-            
+            list.add(img);
             url = new URL(miPokemon.getSprites().get("back_default").toString());
             img = ImageIO.read(url);
-            lblSprites.setIcon(new ImageIcon(img));
-            Thread.sleep(1000);
-            
+            list.add(img);
             url = new URL(miPokemon.getSprites().get("front_shiny").toString());
             img = ImageIO.read(url);
-            lblSprites.setIcon(new ImageIcon(img));
-            Thread.sleep(1000);
-            
+            list.add(img);
             url = new URL(miPokemon.getSprites().get("back_shiny").toString());
             img = ImageIO.read(url);
-            lblSprites.setIcon(new ImageIcon(img));
-            Thread.sleep(1000);
+            list.add(img);
+        }
+        @Override
+        public void run(){
+            Iniciar();
+            try {
+                mostrarSprites();
+            } catch (IOException ex) {
+                Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            while(loop == true){
+                lblSprites.setIcon(new ImageIcon(list.get(cont)));
+                cont++;
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if (cont > 3){
+                    cont = 0;
+                }
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
     }
     
@@ -245,6 +277,7 @@ public class frmMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        Hilo bpokemon = new Hilo(1);
         bpokemon.start();
     }//GEN-LAST:event_btnBuscarActionPerformed
 
@@ -321,28 +354,27 @@ public class frmMain extends javax.swing.JFrame {
     public class Hilo extends Thread{
         int numLabel = 0;
         boolean pokemon = true;
+        String np;
         public Hilo(int num){
             this.numLabel = num;
         }
-
-   
+        
     @Override
-        public void run(){
+        public void run(){  
             if (numLabel == 1) {
-              
-                    dexter = new Pokedex(txtNombre.getText());
-                    try {
-                        dexter.buscarPokemon();
-                    } catch (IOException | InterruptedException ex) {
-                        Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    lblSprites.setText("");
-                
+                dexter = new Pokedex(txtNombre.getText());
+                try {
+                    dexter.buscarPokemon();
+                } catch (IOException | InterruptedException ex) {
+                    Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                lblSprites.setText("");
             }else if(numLabel == 2){
 
             }
         }
     }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscar;
