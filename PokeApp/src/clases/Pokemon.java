@@ -10,7 +10,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 /**
  *
- * @author migu_
+ * @author Miguel Matul <https://github.com/MigueMat4>
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Pokemon {
