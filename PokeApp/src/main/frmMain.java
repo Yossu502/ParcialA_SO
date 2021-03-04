@@ -245,13 +245,7 @@ public class frmMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-                dexter = new Pokedex(txtNombre.getText());
-                try {
-                    dexter.buscarPokemon();
-                } catch (IOException | InterruptedException ex) {
-                    Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                lblSprites.setText("");
+        bpokemon.start();
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -335,7 +329,7 @@ public class frmMain extends javax.swing.JFrame {
     @Override
         public void run(){
             if (numLabel == 1) {
-                while (pokemon) {
+              
                     dexter = new Pokedex(txtNombre.getText());
                     try {
                         dexter.buscarPokemon();
@@ -343,7 +337,7 @@ public class frmMain extends javax.swing.JFrame {
                         Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     lblSprites.setText("");
-                }
+                
             }else if(numLabel == 2){
 
             }
