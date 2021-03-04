@@ -30,7 +30,7 @@ public class frmMain extends javax.swing.JFrame {
     Pokedex dexter; // objeto que hará uso de la conexión a la API
     Pokemon miPokemon; // objeto de la clase que hace match con los datos de la API
     Reloj reloj = new Reloj(); // objeto para la hora del sistema. ¡No modificar!
-    
+    Hilo bpokemon = new Hilo(1);
     /**
      * Creates new form frmMain
      */
@@ -245,13 +245,13 @@ public class frmMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        dexter = new Pokedex(txtNombre.getText());
-        try {
-            dexter.buscarPokemon();
-        } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        lblSprites.setText("");
+                dexter = new Pokedex(txtNombre.getText());
+                try {
+                    dexter.buscarPokemon();
+                } catch (IOException | InterruptedException ex) {
+                    Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                lblSprites.setText("");
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -299,7 +299,6 @@ public class frmMain extends javax.swing.JFrame {
     // clase para la hora del sistema. ¡No modificar!
     public class Reloj extends Thread {
         Calendar calendario;
-        
         @Override
         public void run() {
             while (true) {
@@ -321,6 +320,32 @@ public class frmMain extends javax.swing.JFrame {
                 } catch (InterruptedException ex) {
                     Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }
+        }
+    }
+    
+    public class Hilo extends Thread{
+        int numLabel = 0;
+        boolean pokemon = true;
+        public Hilo(int num){
+            this.numLabel = num;
+        }
+
+   
+    @Override
+        public void run(){
+            if (numLabel == 1) {
+                while (pokemon) {
+                    dexter = new Pokedex(txtNombre.getText());
+                    try {
+                        dexter.buscarPokemon();
+                    } catch (IOException | InterruptedException ex) {
+                        Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    lblSprites.setText("");
+                }
+            }else if(numLabel == 2){
+
             }
         }
     }
